@@ -39,7 +39,7 @@ The 4-side zoom pad applies adjustments live while the panel remains open. Press
 
 ## HEVC / H.265 support
 
-`js/video-codec-compat.js` checks whether the current browser reports native HEVC/H.265 playback support. It is a capability detector, not a standalone software decoder. A browser script cannot guarantee HEVC playback on a system without a suitable decoder. Actual support depends on browser, operating system, codec profile, licensing and hardware. A full FFmpeg/WebAssembly decoder would require a separately selected build, significant download size, performance testing and license review; it is not silently bundled here.
+`js/video-codec-compat.js` checks whether the current browser reports native HEVC/H.265 playback support. It is a capability detector, not a standalone software decoder. A browser script cannot guarantee HEVC playback on a system without a suitable decoder. Actual support depends on browser, operating system, codec profile, licensing and hardware. The removed experimental FFmpeg/WebAssembly transcode utility was not a complete VLC-style codec engine.
 
 ## YouTube / YouTube Music playlists
 
