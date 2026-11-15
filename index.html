@@ -1443,7 +1443,11 @@
     display: inline-flex;
     align-items: center;
     width: 44px;
+    min-width: 44px;
     height: 22px;
+    flex: 0 0 44px;
+    box-sizing: border-box;
+    overflow: hidden;
     border-radius: 12px;
     background: var(--bg-b1);
     border: 1px solid var(--div-bright);
@@ -1458,13 +1462,15 @@
   }
   .vlc-toggle-knob {
     width: 16px;
+    min-width: 16px;
     height: 16px;
+    flex: 0 0 16px;
     border-radius: 50%;
     background: var(--fg-a2);
     transition: transform 0.15s, background 0.15s;
   }
   .vlc-toggle.on .vlc-toggle-knob {
-    transform: translateX(22px);
+    transform: translateX(20px);
     background: var(--accent);
   }
 
@@ -7623,7 +7629,7 @@
 <script src="js/miniplayer-video.js" defer></script>
 <script src="js/pwa-install.js" defer></script>
 <script src="js/network-playlists.js" defer></script>
-<script src="js/ffmpeg-wasm-decoder.js" defer></script>
+<script src="js/offline-codec-engine.js" defer></script>
 <script src="js/player-enhancements.js" defer></script>
 </body>
 </html>
