@@ -2052,7 +2052,10 @@
     .shortcut-grid { grid-template-columns: 1fr; }
   }
 </style>
-  <link rel="stylesheet" href="css/network-playlists.css">
+  <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/network-playlists.css">
+<link rel="stylesheet" href="css/zoom-panel-behavior.css">
+<link rel="stylesheet" href="css/miniplayer-video.css">
 </head>
 <body>
 
@@ -3400,7 +3403,8 @@
     const sat = fx.saturation / 100;
     const inv = fx.negate ? 1 : 0;
     const sep = fx.sepia / 100;
-    vp.style.filter = `hue-rotate(${fx.hue}deg) brightness(${br.toFixed(2)}) contrast(${ct.toFixed(2)}) saturate(${sat.toFixed(2)}) invert(${inv}) sepia(${sep.toFixed(2)})`;
+    const hdrLook = ({ Auto: "", Off: "", HDR10: "brightness(1.06) contrast(1.12) saturate(1.08)", "HDR10+": "brightness(1.09) contrast(1.16) saturate(1.12)", "Dolby Vision": "brightness(1.08) contrast(1.18) saturate(1.14)", HLG: "brightness(1.05) contrast(1.10) saturate(1.10)" })[fx.hdr] || "";
+    vp.style.filter = `hue-rotate(${fx.hue}deg) brightness(${br.toFixed(2)}) contrast(${ct.toFixed(2)}) saturate(${sat.toFixed(2)}) invert(${inv}) sepia(${sep.toFixed(2)}) ${hdrLook}`.trim();
     vp.style.clipPath = `inset(${fx.cropTop}px ${fx.cropRight}px ${fx.cropBottom}px ${fx.cropLeft}px)`;
 
     if (overlay) {
@@ -3798,13 +3802,13 @@
     const ytWrap = document.getElementById('yt-stage-wrap');
     const ytIframe = document.getElementById('yt-iframe-el');
 
-    if (item.isYouTube && item.ytId) {
+    if (item.isYouTube && (item.ytId || item.ytPlaylistId)) {
       realVid.style.display = 'none';
       if (netVid) netVid.style.display = 'none';
       if (miniVid) { miniVid.pause(); miniVid.removeAttribute('src'); miniVid.style.display = 'none'; }
       if (ytWrap) ytWrap.classList.add('active');
       if (ytIframe) {
-        const targetEmbedUrl = buildYouTubeEmbedUrl(item.ytId, state.ytEmbedMode || 'standard', state.currentTime);
+        const targetEmbedUrl = item.ytPlaylistId ? window.VLCYouTubePlaylist.buildEmbedUrl(item.ytPlaylistId, state.ytEmbedMode || 'standard', state.currentTime) : buildYouTubeEmbedUrl(item.ytId, state.ytEmbedMode || 'standard', state.currentTime);
         if (ytIframe.src !== targetEmbedUrl) {
           ytIframe.src = targetEmbedUrl;
         } else {
@@ -5081,7 +5085,7 @@
           </div>
         </div>
         <div class="pop-row">
-          <span class="pop-label">HDR (c93)</span>
+          <span class="pop-label">HDR Look Preset <small style="color:var(--fg-a3);">(visual effect only)</small></span>
           <select id="fx-hdr-sel" class="vlc-select">
             ${['Auto', 'Off', 'HDR10', 'HDR10+', 'Dolby Vision', 'HLG'].map(h => `<option value="${h}" ${fx.hdr === h ? 'selected' : ''}>${h}</option>`).join('')}
           </select>
@@ -7052,12 +7056,11 @@
       const createdItems = [];
 
       urls.forEach((url, idx) => {
+        const ytPlaylistId = (streamType === 'youtube' || streamType === 'auto' || streamType === 'video') && window.VLCYouTubePlaylist ? window.VLCYouTubePlaylist.extractPlaylistId(url) : null;
         const ytId = (streamType === 'youtube' || streamType === 'auto' || streamType === 'video') ? extractYouTubeId(url) : null;
-        const isYt = Boolean(ytId && streamType !== 'audio');
+        const isYt = Boolean((ytId || ytPlaylistId) && streamType !== 'audio');
         const isAud = !isYt && (streamType === 'audio' ? true : (streamType === 'video' ? false : isAudioUrl(url)));
-        const cleanUrlName = isYt
-          ? `YouTube Video (${ytId})`
-          : decodeURIComponent((url.split('?')[0].split('/').pop() || 'Network Stream')).replace(/\.[^.]+$/, '');
+        const cleanUrlName = ytPlaylistId ? `YouTube Music Playlist (${ytPlaylistId})` : isYt ? `YouTube Video (${ytId})` : decodeURIComponent((url.split('?')[0].split('/').pop() || 'Network Stream')).replace(/\.[^.]+$/, '');
         const hasCustom = Boolean(customTitle);
         const title = (customTitle && urls.length === 1) ? customTitle : (customTitle ? `${customTitle} #${idx + 1}` : (cleanUrlName || 'Network Stream'));
         const coverArt = MUSIC_THEME_COVERS[(SONGS.length + idx) % MUSIC_THEME_COVERS.length] || DEFAULT_AUDIO_COVER;
@@ -7081,6 +7084,7 @@
           isAudio: isAud,
           isYouTube: isYt,
           ytId: ytId,
+          ytPlaylistId: ytPlaylistId,
           autoDetectStream: !isYt && streamType === 'auto' && !isAud,
           localUrl: url,
           addedAt: Date.now() + idx,
@@ -7257,10 +7261,10 @@
         e.stopPropagation();
         state.ytEmbedMode = btn.dataset.ytMode;
         document.querySelectorAll('[data-yt-mode]').forEach(b => b.classList.toggle('active', b.dataset.ytMode === state.ytEmbedMode));
-        if (state.activeMedia && state.activeMedia.isYouTube && state.activeMedia.ytId) {
+        if (state.activeMedia && state.activeMedia.isYouTube && (state.activeMedia.ytId || state.activeMedia.ytPlaylistId)) {
           const ytIframe = document.getElementById('yt-iframe-el');
           if (ytIframe) {
-            ytIframe.src = buildYouTubeEmbedUrl(state.activeMedia.ytId, state.ytEmbedMode, state.currentTime);
+            ytIframe.src = state.activeMedia.ytPlaylistId ? window.VLCYouTubePlaylist.buildEmbedUrl(state.activeMedia.ytPlaylistId, state.ytEmbedMode, state.currentTime) : buildYouTubeEmbedUrl(state.activeMedia.ytId, state.ytEmbedMode, state.currentTime);
           }
           showToast(`YouTube Mode: ${btn.textContent}`);
         }
@@ -7602,6 +7606,11 @@
 })();
 </script>
 
+<script src="js/youtube-playlists.js" defer></script>
+<script src="js/video-codec-compat.js" defer></script>
+<script src="js/zoom-panel-behavior.js" defer></script>
+<script src="js/miniplayer-video.js" defer></script>
+<script src="js/pwa-install.js" defer></script>
 <script src="js/network-playlists.js" defer></script>
 </body>
 </html>
