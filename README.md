@@ -76,9 +76,9 @@ Made by **Avinash Jadhav**.
 ## User profiles, visual customization and online subtitles
 
 - **Profile & Appearance** in Settings lets the user create, edit or delete a local profile. No sample or preset user profiles are created. Profile fields and visual preferences are stored in this browser's local storage and are not synced to a server.
-- **Customize Player → Visual effects** provides interface glass blur, album-art background blur and artwork reflection controls. Settings are applied locally and persisted in the browser.
+- **Settings → Global Settings → Appearance → Visual Effects** provides interface glass blur, album-art background blur and artwork reflection controls. Settings are applied locally and persisted in the browser.
 - The music spectrum reads the current album-art image palette where the browser permits canvas pixel access. Cross-origin artwork without CORS permission falls back to the player's accent color.
-- **Online subtitles** uses the OpenSubtitles API. The user must supply their own OpenSubtitles API key in Settings → Profile & Appearance. Search uses the currently loaded media title where it can be detected. API limits, CORS, account and provider rules apply. API keys are stored locally in this browser; do not use a shared/public computer for private keys. Automatic best-match search is enabled by default once an API key is saved; it runs when a local video metadata event fires. You can disable automatic subtitle loading in the same settings section.
+- **Online subtitles** uses the OpenSubtitles API. The user must supply their own OpenSubtitles API key in Settings → Edit Profile. Search uses the currently loaded media title where it can be detected. API limits, CORS, account and provider rules apply. API keys are stored locally in this browser; do not use a shared/public computer for private keys. Automatic best-match search is enabled by default once an API key is saved; it runs when a local video metadata event fires. You can disable automatic subtitle loading in the same settings section.
 
 
 ## Offline codec engine boundary
