@@ -79,3 +79,13 @@ For permission requests, contact the owner through [GitHub](https://github.com/a
 
 ---
 Made by **Avinash Jadhav**.
+
+## Network / IPTV playlists
+
+The Network section now has a separate playlist manager module:
+- `js/network-playlists.js`: imports M3U/M3U8 files, searches channels, plays entries through the player bridge, and exports M3U.
+- `css/network-playlists.css`: styles the manager using the existing player theme.
+- Playlist metadata is stored in this browser's local storage. It is not committed to GitHub.
+- Remote playlist URL import depends on the remote host allowing browser CORS requests; downloading the playlist and importing the local file is the fallback.
+- Playback depends on browser-native media support and the stream provider's availability, HTTPS/CORS policy, codec, and authentication requirements. This browser player is not a replacement for VLC's native codec engine; not every IPTV codec or DRM stream can play in a browser.
+- Use only playlists and streams you are authorized to access. Never commit private playlist URLs, tokens, or credentials.
