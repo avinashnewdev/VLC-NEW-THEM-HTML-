@@ -3699,9 +3699,8 @@
       miniThumb.src = art;
       document.getElementById('scrub-preview-img').src = art;
       if (!m.isAudio && m.localUrl && miniVid) {
-        const isRemoteMini = !m.localUrl.startsWith('blob:') && !m.localUrl.startsWith('data:');
         const miniOpen = document.getElementById('miniplayer').classList.contains('open');
-        if (!isRemoteMini || miniOpen) {
+        if (miniOpen) {
           if (miniVid.src !== m.localUrl) miniVid.src = m.localUrl;
           miniVid.muted = true;
           miniVid.playsInline = true;
@@ -3860,12 +3859,13 @@
           syncPlayerUI();
           showToast('Unable to play video URL directly — check stream link');
         });
-        if (miniVid && !isRemote) {
+        if (miniVid && document.getElementById('miniplayer').classList.contains('open')) {
           miniVid.src = item.localUrl;
+          miniVid.muted = true;
           try { miniVid.currentTime = state.currentTime; } catch (e) {}
           miniVid.play().catch(() => {});
-        } else if (miniVid && isRemote) {
-          // Do not open a second copy of a live network stream for the mini-player.
+        } else if (miniVid) {
+          // Keep the preview unloaded until the floating mini-player is opened.
           miniVid.pause();
           miniVid.removeAttribute('src');
           miniVid.load();
