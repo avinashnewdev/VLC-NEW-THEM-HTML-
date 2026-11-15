@@ -55,15 +55,13 @@
   function renderProfileSettings(){
     const body=document.getElementById('settings-cat-body');if(!body)return;
     document.querySelectorAll('.settings-cat-btn').forEach(b=>b.classList.toggle('active',b.id==='vlc-profile-tab'));
-    document.getElementById('settings-cat-title').textContent='Edit Profile · Profile Appearance';
+    document.getElementById('settings-cat-title').textContent='Edit Profile';
     const editing=cfg.profiles.find(p=>p.id===cfg.editingProfileId)||null;
     const current=editing||{name:'',note:'',avatar:''};
     const snap=profileSnapshot();
     const saved=cfg.profiles.map(p=>'<div class="vlc-profile-saved-row"><div class="vlc-profile-avatar">'+(p.avatar?'<img src="'+esc(p.avatar)+'" alt="">':'<span>♙</span>')+'</div><div class="vlc-profile-info"><strong>'+esc(p.name)+'</strong><small>'+esc(p.note||'Personal profile')+'</small><small>Theme '+esc(p.snapshot?.theme||'Current')+' · Blur '+esc(p.snapshot?.uiBlur??cfg.uiBlur)+'px · Art Refl '+esc(p.snapshot?.reflection??cfg.reflection)+'%</small></div><div class="vlc-profile-actions"><button class="vlc-enhancement-action" data-edit-profile="'+esc(p.id)+'">Edit</button><button class="vlc-enhancement-action" data-use-profile="'+esc(p.id)+'">Use</button><button class="vlc-enhancement-action" data-delete-profile="'+esc(p.id)+'">Delete</button></div></div>').join('');
     body.innerHTML=card('Create Your Profile','<p class="vlc-enhancement-note">No default profiles are pre-loaded. Create or edit your own profile with your name, avatar photo, and custom audio/video/theme settings.</p><div class="vlc-profile-create"><div class="vlc-profile-avatar large" id="vlc-profile-avatar-preview">'+(current.avatar?'<img src="'+esc(current.avatar)+'" alt="">':'<span>♙</span>')+'</div><div class="vlc-profile-fields"><input class="vlc-enhancement-input" id="vlc-profile-name" maxlength="60" placeholder="Enter your profile name…" value="'+esc(current.name)+'"><input class="vlc-enhancement-input" id="vlc-profile-note" maxlength="140" placeholder="Role or setup note (optional, e.g. Custom Audio & 4K Video)" value="'+esc(current.note)+'"><input id="vlc-profile-photo" type="file" accept="image/*" hidden><button class="vlc-enhancement-action" id="vlc-profile-upload">Upload Photo</button></div></div><div class="vlc-profile-snapshot"><span>Included in Profile Snapshot</span><strong>Theme ('+esc(snap.theme)+') · Accent ('+esc(snap.accent)+') · Blur ('+cfg.uiBlur+'px) · Art Refl ('+cfg.reflection+'%) · EQ & Zoom</strong></div><div class="vlc-profile-save-row"><button class="vlc-enhancement-action primary" id="vlc-profile-save">'+(editing?'Save Profile Changes':'＋ Save New Profile')+'</button>'+(editing?'<button class="vlc-enhancement-action" id="vlc-profile-cancel">Cancel Edit</button>':'')+'</div><p class="vlc-enhancement-note" id="vlc-profile-status"></p>')+
     card('Your Saved Profiles ('+cfg.profiles.length+')',saved||'<div class="vlc-profile-empty">No profile exists yet. Enter your name above and click <b>＋ Save New Profile</b> to create your first profile.</div>')+
-    card('Profile Appearance & Player Customization',rangeRow('Interface glass blur','uiBlur',0,40,1,'px')+rangeRow('Album-art background blur','artBlur',0,50,1,'px')+rangeRow('Artwork reflection strength','reflection',0,100,1,'%')+'<p class="vlc-enhancement-note">These appearance values are included in each profile snapshot. Changes apply immediately and are saved on this device.</p>')+
-    card('FFmpeg software decoding','<p class="vlc-enhancement-note">Decode the currently selected local media file with the optional FFmpeg/WebAssembly engine. The first use downloads the decoder core.</p><button class="vlc-enhancement-action" id="vlc-ffmpeg-decode">Decode selected local file</button><p class="vlc-enhancement-note" id="vlc-ffmpeg-status"></p>')+
     card('Automatic online subtitles','<label style="display:flex;align-items:center;gap:8px;margin:8px 0"><input id="vlc-auto-sub" type="checkbox" '+(cfg.autoSubtitle?'checked':'')+'> Automatically search and load the best matching subtitle when a local video opens</label><label class="pop-label">Subtitle language (ISO 639-2)</label><input class="vlc-enhancement-input" id="vlc-sub-lang" maxlength="3" value="'+esc(cfg.subtitleLanguage)+'" placeholder="eng"><label class="pop-label">OpenSubtitles API key</label><input class="vlc-enhancement-input" id="vlc-sub-key" type="password" autocomplete="off" placeholder="Add your own OpenSubtitles API key" value="'+esc(cfg.openSubtitlesApiKey)+'"><button class="vlc-enhancement-action" id="vlc-sub-test">Save subtitle settings</button><p class="vlc-enhancement-note">Online subtitle search needs an OpenSubtitles API key. The key is stored locally in this browser only. Search is offered when a local video is loaded; protected or DRM streams are not modified.</p>');
     ['uiBlur','artBlur','reflection'].forEach(k=>{const el=document.getElementById('vlc-'+k);el.addEventListener('input',()=>{cfg[k]=Number(el.value);document.getElementById('vlc-'+k+'-out').textContent=el.value+(k==='reflection'?'%':'px');save();applyLook();});});
     let avatar=current.avatar||'';
@@ -80,13 +78,16 @@
   }
   function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function toast(msg){const el=document.getElementById('vlc-toast');if(el){el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400);}else console.info(msg);}
-  function addCustomizeControls(){
-    const box=document.querySelector('#customize-modal .customize-box');if(!box||document.getElementById('vlc-visual-customize'))return;
-    const section=document.createElement('section');section.id='vlc-visual-customize';section.className='settings-card';section.style.marginTop='14px';
-    section.innerHTML='<h4>Visual effects</h4>'+rangeRow('Interface glass blur','uiBlur',0,40,1,'px','vlc-custom-')+rangeRow('Album-art background blur','artBlur',0,50,1,'px','vlc-custom-')+rangeRow('Artwork reflection strength','reflection',0,100,1,'%','vlc-custom-')+'<button class="vlc-enhancement-action" id="vlc-open-profile-settings">More profile & subtitle settings</button>';
-    box.appendChild(section);
-    ['uiBlur','artBlur','reflection'].forEach(k=>{const el=document.getElementById('vlc-custom-'+k);el.addEventListener('input',()=>{cfg[k]=Number(el.value);document.getElementById('vlc-custom-'+k+'-out').textContent=el.value+(k==='reflection'?'%':'px');save();applyLook();});});
-    document.getElementById('vlc-open-profile-settings').onclick=()=>{const modal=document.getElementById('modal-settings');document.querySelectorAll('.modal-backdrop').forEach(m=>m.classList.remove('open'));modal.classList.add('open');addSettingsTab();renderProfileSettings();};
+  function renderGlobalAppearance(){
+    const title=document.getElementById('settings-cat-title');
+    const body=document.getElementById('settings-cat-body');
+    if(!title||!body||!title.textContent.includes('Global Settings'))return;
+    const appearance=Array.from(body.querySelectorAll('.settings-card')).find(el=>el.querySelector('h4')?.textContent.trim()==='Appearance');
+    if(!appearance||appearance.querySelector('#vlc-global-visual-effects'))return;
+    const section=document.createElement('div');section.id='vlc-global-visual-effects';
+    section.innerHTML='<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--div-dim)"><h4 style="margin:0 0 8px">Visual Effects</h4>'+rangeRow('Interface glass blur','uiBlur',0,40,1,'px','vlc-global-')+rangeRow('Album-art background blur','artBlur',0,50,1,'px','vlc-global-')+rangeRow('Artwork reflection strength','reflection',0,100,1,'%','vlc-global-')+'<p class="vlc-enhancement-note">Effects apply immediately to the player interface and album artwork.</p></div>';
+    appearance.appendChild(section);
+    ['uiBlur','artBlur','reflection'].forEach(k=>{const el=document.getElementById('vlc-global-'+k);el.addEventListener('input',()=>{cfg[k]=Number(el.value);document.getElementById('vlc-global-'+k+'-out').textContent=el.value+(k==='reflection'?'%':'px');save();applyLook();});});
   }
   function currentVideoTitle(){
     const media=document.querySelector('#real-video-el, #net-video-el');const src=media?.currentSrc||media?.src||'';
@@ -94,7 +95,7 @@
     return document.querySelector('.music-track-label')?.textContent?.trim()||document.querySelector('#video-title')?.textContent?.trim()||'';
   }
   async function searchOnlineSubtitles(auto=false){
-    if(!cfg.openSubtitlesApiKey){toast('Add an OpenSubtitles API key in Profile & Appearance settings first.');return;}
+    if(!cfg.openSubtitlesApiKey){toast('Add an OpenSubtitles API key in Edit Profile settings first.');return;}
     const query=currentVideoTitle();if(!query){toast('Could not detect the video title.');return;}
     try{
       toast('Searching online subtitles…');
@@ -140,12 +141,12 @@
   }
   function install(){
     document.querySelectorAll('#real-video-el,#net-video-el').forEach(v=>v.addEventListener('loadedmetadata',()=>{const src=v.currentSrc||v.src;if(cfg.autoSubtitle&&cfg.openSubtitlesApiKey&&src.startsWith('blob:')&&window.__vlcLastSubtitleSource!==src){window.__vlcLastSubtitleSource=src;searchOnlineSubtitles(true);}}));
-    addStyles();addSettingsTab();addCustomizeControls();addSubtitleSearchButton();applyLook();installSpectrumColors();
-    const observer=new MutationObserver(()=>{addSettingsTab();addCustomizeControls();addSubtitleSearchButton();applyLook();});
+    addStyles();addSettingsTab();addSubtitleSearchButton();applyLook();installSpectrumColors();renderGlobalAppearance();
+    const observer=new MutationObserver(()=>{addSettingsTab();addSubtitleSearchButton();applyLook();renderGlobalAppearance();});
     observer.observe(document.body,{childList:true,subtree:true});
     const profileMenu=document.getElementById('menu-profile-lbl');if(profileMenu)profileMenu.textContent='Edit profile…';
     document.querySelectorAll('[data-menu-action="cycle-profile"]').forEach(el=>{el.addEventListener('click',()=>{const open=document.getElementById('btn-close-settings');if(open){document.getElementById('modal-settings')?.classList.add('open');addSettingsTab();renderProfileSettings();}},{capture:true});});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-  window.VLCPlayerEnhancements={getSettings:()=>({...cfg}),searchOnlineSubtitles};
+  window.VLCPlayerEnhancements={getSettings:()=>({...cfg}),searchOnlineSubtitles,applyLook};
 })();
