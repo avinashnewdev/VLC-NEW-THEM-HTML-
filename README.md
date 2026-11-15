@@ -80,17 +80,9 @@ Made by **Avinash Jadhav**.
 - The music spectrum reads the current album-art image palette where the browser permits canvas pixel access. Cross-origin artwork without CORS permission falls back to the player's accent color.
 - **Online subtitles** uses the OpenSubtitles API. The user must supply their own OpenSubtitles API key in Settings → Profile & Appearance. Search uses the currently loaded media title where it can be detected. API limits, CORS, account and provider rules apply. API keys are stored locally in this browser; do not use a shared/public computer for private keys. Automatic best-match search is enabled by default once an API key is saved; it runs when a local video metadata event fires. You can disable automatic subtitle loading in the same settings section.
 
-## Optional FFmpeg/WebAssembly decoder
 
-The separate `js/ffmpeg-wasm-decoder.js` module exposes `window.VLCSoftwareDecoder`. It loads FFmpeg WebAssembly only when requested, and provides `decode(file, options)` for a local File/Blob, returning a playable object URL and a `revoke()` cleanup method. Example:
+## Offline codec engine boundary
 
-```js
-const result = await VLCSoftwareDecoder.decode(file, {
-  onProgress: progress => console.log(Math.round(progress * 100) + '%')
-});
-videoElement.src = result.url;
-// When playback is finished:
-result.revoke();
-```
+The experimental FFmpeg/WebAssembly transcode button and CDN loader have been removed. The replacement `js/offline-codec-engine.js` is a standalone integration adapter: it can use a desktop host exposed as `window.vlcNative` for native decoding, audio-track selection and subtitle loading, and it provides browser-native track/subtitle helpers where supported.
 
-This module is an optional decoder utility, not a transparent replacement for every browser playback path. Transcoding is CPU- and memory-intensive, may be slow on large/high-resolution files, and output codecs depend on the selected FFmpeg build. The module currently transcodes to H.264/AAC MP4 by default; it does not promise universal playback of every codec or profile. The FFmpeg wrapper/core are loaded from public CDN URLs on demand. Review the applicable FFmpeg and WebAssembly package licenses before redistributing a bundled build.
+**Important:** this HTML/PWA build does not contain a native VLC/libVLC decoder. A browser JavaScript file cannot become VLC's native codec engine or guarantee offline HEVC/H.265 decoding on every device. The adapter reports native-engine availability instead of pretending unsupported codecs are decoded. Reliable offline HEVC/H.265, multi-audio and subtitle support requires packaging this UI in a desktop shell (for example Electron/Tauri) and implementing the host bridge with a licensed, correctly packaged libVLC build. Browser playback remains subject to browser/OS codec support.
