@@ -1,4 +1,4 @@
-name: Deploy static site to GitHub Pages
+name: Validate and deploy VLC HTML site
 
 on:
   push:
@@ -15,20 +15,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    name: Validate project files and HTML
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check original HTML and linked files
+        run: python scripts/validate_site.py
+
   deploy:
+    name: Publish to GitHub Pages
+    needs: validate
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Configure Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Upload site artifact
+      - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
           path: "."
-      - name: Deploy to GitHub Pages
+      - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@v4
