@@ -2634,6 +2634,7 @@
 
         <div class="settings-group-label">App</div>
         <button class="settings-cat-btn active" data-scat="global">Global</button>
+        <button class="settings-cat-btn" data-scat="profile">Edit Profile</button>
         <button class="settings-cat-btn" data-scat="interface">Interface</button>
         <button class="settings-cat-btn" data-scat="privacy">Privacy</button>
 
@@ -2878,7 +2879,7 @@
     recordingStartTime: 0,
     theme: 'dark',
     accent: ACCENT_COLORS[0],
-    profile: '',
+    profile: 'VLC User',
     libraryOpen: false,
     libTab: 'videos',
     libView: 'grid',
@@ -5813,6 +5814,80 @@
     document.getElementById('settings-cat-title').textContent = data.title;
     const body = document.getElementById('settings-cat-body');
 
+    if (catKey === 'profile') {
+      let savedAvatar = '';
+      try {
+        savedAvatar = localStorage.getItem('vlc.profile.avatar') || '';
+        state.profile = localStorage.getItem('vlc.profile.name') || state.profile || 'VLC User';
+      } catch (e) {}
+      body.innerHTML = `
+        <div class="settings-card">
+          <h4>Player Profile</h4>
+          <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 0;">
+            <div id="vlc-profile-avatar-preview" style="width:76px;height:76px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:var(--bg-b1);border:2px solid var(--accent);font-size:28px;color:var(--accent);font-weight:700;">${savedAvatar ? `<img src="${savedAvatar}" alt="Profile photo" style="width:100%;height:100%;object-fit:cover;">` : 'V'}</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <strong style="color:var(--fg-1);">Profile photo</strong>
+              <label class="btn-secondary" for="vlc-profile-photo" style="cursor:pointer;padding:7px 12px;">Choose Photo</label>
+              <input id="vlc-profile-photo" type="file" accept="image/png,image/jpeg,image/webp" style="display:none;">
+              <span style="font-size:11px;color:var(--fg-a3);">PNG, JPG or WebP · Max 1 MB</span>
+            </div>
+          </div>
+          <div class="pop-row" style="margin-top:12px;align-items:flex-start;flex-direction:column;">
+            <label class="pop-label" for="vlc-profile-name">Profile name</label>
+            <input id="vlc-profile-name" type="text" maxlength="32" value="${String(state.profile || 'VLC User').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}" placeholder="Enter profile name" style="width:100%;box-sizing:border-box;background:var(--bg-b1);border:1px solid var(--div-bright);border-radius:6px;padding:9px 11px;color:var(--fg-1);">
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;">
+            <button class="btn-secondary" id="vlc-profile-reset">Reset</button>
+            <button class="btn-primary" id="vlc-profile-save">Save Profile</button>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--fg-a3);">Your profile name and photo are stored locally on this device.</p>
+      `;
+      const photoInput = document.getElementById('vlc-profile-photo');
+      if (photoInput) photoInput.addEventListener('change', () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+        if (!/^image\\/(png|jpeg|webp)$/.test(file.type) || file.size > 1024 * 1024) {
+          showToast('Choose a PNG, JPG or WebP image under 1 MB');
+          photoInput.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const preview = document.getElementById('vlc-profile-avatar-preview');
+          if (preview) preview.innerHTML = `<img src="${reader.result}" alt="Profile photo" style="width:100%;height:100%;object-fit:cover;">`;
+          preview.dataset.avatar = String(reader.result);
+        };
+        reader.readAsDataURL(file);
+      });
+      document.getElementById('vlc-profile-save').addEventListener('click', () => {
+        const name = document.getElementById('vlc-profile-name').value.trim();
+        if (!name) { showToast('Please enter a profile name'); return; }
+        const preview = document.getElementById('vlc-profile-avatar-preview');
+        const avatar = preview && preview.dataset.avatar ? preview.dataset.avatar : savedAvatar;
+        try {
+          localStorage.setItem('vlc.profile.name', name);
+          if (avatar) localStorage.setItem('vlc.profile.avatar', avatar);
+          else localStorage.removeItem('vlc.profile.avatar');
+          state.profile = name;
+          const label = document.getElementById('menu-profile-lbl');
+          if (label) label.textContent = `Profile (${name})`;
+          showToast('Profile saved successfully');
+        } catch (e) {
+          showToast('Could not save profile: browser storage is full or unavailable');
+        }
+      });
+      document.getElementById('vlc-profile-reset').addEventListener('click', () => {
+        try { localStorage.removeItem('vlc.profile.name'); localStorage.removeItem('vlc.profile.avatar'); } catch (e) {}
+        state.profile = 'VLC User';
+        renderSettingsCategory('profile');
+        const label = document.getElementById('menu-profile-lbl');
+        if (label) label.textContent = 'Profile (VLC User)';
+        showToast('Profile reset');
+      });
+      return;
+    }
+
     body.innerHTML = data.cards.map(card => `
       <div class="settings-card">
         <h4>${card.heading}</h4>
@@ -6480,8 +6555,7 @@
           document.getElementById('modal-add-subs').classList.add('open');
         }
         else if (act === 'cycle-profile') {
-          openSettingsModal('global');
-          document.getElementById('vlc-profile-tab')?.click();
+          openSettingsModal('profile');
         } else if (act === 'shortcuts') {
           renderShortcutsTable();
           document.getElementById('modal-shortcuts').classList.add('open');
