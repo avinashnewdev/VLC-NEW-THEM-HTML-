@@ -1,91 +1,73 @@
-# VLC New Theme HTML — Version 1.0
+# VLC New Theme HTML Player
 
 **© 2026 Avinash Jadhav. All Rights Reserved.**
 
-> Original project and HTML interface by Avinash Jadhav. This is proprietary software. No permission for commercial use, redistribution, or modification is granted without prior written permission. See [LICENSE](LICENSE).
+This is an independent browser-based media player interface. It is proprietary software; see [LICENSE](LICENSE). VLC and related marks belong to their respective owners. This is not an official VideoLAN release.
 
-[![Version](https://img.shields.io/badge/version-1.0-blue)](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/releases)
-[![Proprietary](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
-[![GitHub Pages](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions/workflows/pages.yml/badge.svg)](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions/workflows/pages.yml)
-[![Validate](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions/workflows/pages.yml/badge.svg)](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions)
+## Open and install
 
-## Open / preview
+- **Live player:** https://avinashnewdev.github.io/VLC-NEW-THEM-HTML-/
+- **Repository:** https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-
+- **Actions / deployment:** https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions
 
-- **Live website:** [Open VLC New Theme HTML](https://avinashnewdev.github.io/VLC-NEW-THEM-HTML-/) — available after GitHub Pages is enabled and the deployment succeeds.
-- **Original HTML source:** [vlc_media_player_redesign_community (4).html](vlc_media_player_redesign_community%20(4).html)
-- **Published homepage:** [index.html](index.html)
-- **Deployment history:** [GitHub Actions](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions)
-- **Repository:** [VLC-NEW-THEM-HTML-](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-)
+On a supported desktop browser (Chrome or Edge), open the live player and use **Install App** when offered. If the button is unavailable, use the browser menu → **Install page as app** / **Apps → Install this site**. This installs the player shell as a desktop web app; it does not download YouTube videos or bypass streaming restrictions. The service worker caches the same-origin app shell for repeat visits. Media streams and third-party content are not cached.
 
-## About
-
-This repository contains the original VLC-inspired media-player HTML interface created by **Avinash Jadhav**. The website homepage `index.html` is kept byte-for-byte identical to the preserved original source file `vlc_media_player_redesign_community (4).html`. The original VLC cone SVG at the top-left of the player is retained from that source; no substitute logo or redesigned demo is used.
-
-- **Creator:** Avinash Jadhav
-- **Version:** 1.0
-- **Copyright:** © 2026 Avinash Jadhav. All Rights Reserved.
-- **License:** Proprietary — [read LICENSE](LICENSE)
-- **Security reporting:** [SECURITY.md](SECURITY.md)
-
-## Repository map
+## Features and modules
 
 | File | Purpose |
 |---|---|
-| `index.html` | GitHub Pages entry point; exact copy of the original HTML |
-| `vlc_media_player_redesign_community (4).html` | Preserved original HTML source |
-| `README.md` | Project overview, links, setup, and roadmap |
-| `LICENSE` | Proprietary usage terms |
-| `SECURITY.md` | Responsible vulnerability reporting |
-| `.github/workflows/pages.yml` | HTML integrity checks and GitHub Pages deployment |
-| `scripts/validate_site.py` | Automated checks for required files and original HTML integrity |
-| `.nojekyll` | Disables Jekyll processing for static publishing |
+| `index.html` | Player UI and playback integration |
+| `js/network-playlists.js` | M3U/M3U8 channel-list import, search, play and export |
+| `css/network-playlists.css` | Network playlist UI |
+| `js/youtube-playlists.js` | YouTube / YouTube Music playlist URL parsing and official playlist embeds |
+| `js/video-codec-compat.js` | Browser-native HEVC/H.265 capability detection |
+| `js/zoom-panel-behavior.js` | Keeps 4-side zoom editor open until the user presses OK |
+| `css/zoom-panel-behavior.css` | Zoom confirmation styling |
+| `js/miniplayer-video.js` | Syncs video preview in the floating mini-player |
+| `css/miniplayer-video.css` | Mini-player video styling |
+| `js/pwa-install.js` | Desktop web-app install prompt and service-worker registration |
+| `manifest.webmanifest` | PWA metadata |
+| `sw.js` | Same-origin app-shell offline cache |
+| `icons/player-icon.svg` | Install icon |
+| `SECURITY.md` | Security and privacy notes |
+| `scripts/validate_site.py` | HTML, module and repository checks |
+| `vlc_media_player_redesign_community (4).html` | Preserved original source archive |
 
-## Version 1.0 and future roadmap
+## Video zoom and HDR looks
 
-Version 1.0 packages the original HTML as the homepage, preserves the original VLC logo, documents ownership, and adds automated repository integrity checks plus GitHub Pages deployment configuration.
+The 4-side zoom pad applies adjustments live while the panel remains open. Press **OK** to close the panel after confirming the result. HDR10 / HDR10+ / Dolby Vision / HLG selections are **visual filter presets only**; browser JavaScript cannot switch the operating system's HDR decoder or force HDR output.
 
-The items below are future improvements, not claims that they are already implemented:
+## HEVC / H.265 support
 
-- [ ] Expand automated browser testing across Chrome, Edge, and Firefox.
-- [ ] Verify local media playback and codec/container compatibility on target browsers.
-- [ ] Review every player control and fix confirmed interaction bugs without changing the design.
-- [ ] Improve accessibility, keyboard navigation, and responsive layouts.
-- [ ] Add multilingual UI support.
-- [ ] Document supported media formats and limitations.
+`js/video-codec-compat.js` checks whether the current browser reports native HEVC/H.265 playback support. It is a capability detector, not a standalone software decoder. A browser script cannot guarantee HEVC playback on a system without a suitable decoder. Actual support depends on browser, operating system, codec profile, licensing and hardware. A full FFmpeg/WebAssembly decoder would require a separately selected build, significant download size, performance testing and license review; it is not silently bundled here.
+
+## YouTube / YouTube Music playlists
+
+Paste a YouTube Music or YouTube playlist URL into **Open Network Stream** (Auto or YouTube type). The player uses YouTube's official playlist embed. Playback is subject to YouTube's availability, embed permissions, account/region restrictions, browser autoplay rules and playlist privacy. This does not download or extract protected media.
+
+## Mini-player
+
+When the floating mini-player is opened, it mirrors the active video and follows playback time. A network video may open a second stream connection while the mini-player is visible, which can increase bandwidth use; close the mini-player to stop that preview.
+
+## Codec, stream and browser limitations
+
+This is a browser player, not VLC's native decoding engine. Playback depends on the browser's supported formats/codecs, operating-system media components, stream server CORS settings, network quality and provider restrictions. DRM, protected streams, unsupported codec profiles and some live HLS/DASH streams may not play. IPTV remote playlist import requires the playlist host to allow CORS; importing a downloaded local M3U file is the alternative.
+
+Only use media and playlists you are authorized to access. Never commit subscription URLs, passwords, API keys, cookies or private tokens.
 
 ## Run locally
 
-Use Python's built-in static server from the repository root:
+From the repository root:
 
 ```bash
 python -m http.server 8000
 ```
 
-Open http://localhost:8000 in your browser.
+Open http://localhost:8000. PWA installation and service workers require localhost or HTTPS; they do not work from a `file://` URL.
 
-## Deployment
+## Deployment and validation
 
-The workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) runs repository integrity checks and then publishes the repository root to GitHub Pages on pushes to `main`.
-
-**One-time GitHub setting required:** open repository **Settings → Pages → Build and deployment → Source**, select **GitHub Actions**, and save. GitHub currently reports Pages as not enabled for this repository; the workflow cannot enable that repository setting by itself. Once enabled, each push deploys automatically.
-
-Check [Actions](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions) for validation and deployment results.
-
-## Ownership and third-party notices
-
-Public repository visibility does not grant permission to reuse the proprietary source. The owner retains rights in original work, subject to applicable third-party materials and their licenses. VLC and related marks belong to their respective owners; this is an independent interface/theme project and is not represented as an official VideoLAN release.
-
-For permission requests, contact the owner through [GitHub](https://github.com/avinashnewdev).
+GitHub Actions validates the project and publishes the repository root to GitHub Pages on pushes to `main`. See the Actions link above for the latest run.
 
 ---
 Made by **Avinash Jadhav**.
-
-## Network / IPTV playlists
-
-The Network section now has a separate playlist manager module:
-- `js/network-playlists.js`: imports M3U/M3U8 files, searches channels, plays entries through the player bridge, and exports M3U.
-- `css/network-playlists.css`: styles the manager using the existing player theme.
-- Playlist metadata is stored in this browser's local storage. It is not committed to GitHub.
-- Remote playlist URL import depends on the remote host allowing browser CORS requests; downloading the playlist and importing the local file is the fallback.
-- Playback depends on browser-native media support and the stream provider's availability, HTTPS/CORS policy, codec, and authentication requirements. This browser player is not a replacement for VLC's native codec engine; not every IPTV codec or DRM stream can play in a browser.
-- Use only playlists and streams you are authorized to access. Never commit private playlist URLs, tokens, or credentials.
