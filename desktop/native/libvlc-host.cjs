@@ -7,6 +7,8 @@ class LibVLCNativeHost {
       throw new Error('The first native video-surface implementation currently targets Windows. Linux/macOS adapters are not wired yet.');
     }
     const dll = path.join(libDir, 'libvlc.dll');
+    process.env.VLC_PLUGIN_PATH = path.join(libDir, 'plugins');
+    process.env.PATH = libDir + path.delimiter + (process.env.PATH || '');
     this.lib = koffi.load(dll);
     this.user32 = koffi.load('user32.dll');
     this.defineApi();
