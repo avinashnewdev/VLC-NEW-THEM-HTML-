@@ -33,7 +33,8 @@
       .vlc-enhancement-action.primary{background:var(--accent);color:#111;border-color:var(--accent)}
       .vlc-enhancement-note{font-size:11px;color:var(--fg-a2);line-height:1.5}
       .music-cover-art{position:relative}
-      .music-cover-art:before{content:"";position:absolute;inset:-18px;z-index:0;pointer-events:none;background-image:var(--vlc-art-bg);background-size:cover;background-position:center;filter:blur(var(--vlc-art-blur,22px));opacity:.5;transform:scale(1.08)}\n      .music-cover-art img{position:relative;z-index:1}\n      .music-cover-art:after{content:"";position:absolute;left:0;right:0;top:100%;height:var(--vlc-art-reflection,32%);pointer-events:none;opacity:var(--vlc-reflection-opacity,.32);background-image:var(--vlc-art-bg);background-size:cover;background-position:center;transform:scaleY(-1);filter:blur(2px);mask-image:linear-gradient(to bottom,rgba(0,0,0,.55),transparent)}
+      .music-cover-art:before{content:"";position:absolute;inset:-18px;z-index:0;pointer-events:none;background-image:var(--vlc-art-bg);background-size:cover;background-position:center;filter:blur(var(--vlc-art-blur,22px));opacity:.5;transform:scale(1.08)}
+      .music-cover-art img{position:relative;z-index:1}\n      .music-cover-art:after{content:"";position:absolute;left:0;right:0;top:100%;height:var(--vlc-art-reflection,32%);pointer-events:none;opacity:var(--vlc-reflection-opacity,.32);background-image:var(--vlc-art-bg);background-size:cover;background-position:center;transform:scaleY(-1);filter:blur(2px);mask-image:linear-gradient(to bottom,rgba(0,0,0,.55),transparent)}
     `;document.head.appendChild(st);
   }
   function addSettingsTab(){
@@ -79,7 +80,7 @@
     try{
       toast('Searching online subtitles…');
       const url='https://api.opensubtitles.com/api/v1/subtitles?'+new URLSearchParams({query, languages:cfg.subtitleLanguage||'eng', order_by:'download_count', order_direction:'desc'});
-      const res=await fetch(url,{headers:{'Api-Key':cfg.openSubtitlesApiKey,'Content-Type':'application/json','User-Agent':'VLC-NEW-THEM-HTML/1.0'}});
+      const res=await fetch(url,{headers:{'Api-Key':cfg.openSubtitlesApiKey,'Content-Type':'application/json'}});
       if(!res.ok)throw new Error('OpenSubtitles returned HTTP '+res.status);
       const data=await res.json();const results=(data.data||[]).slice(0,8);
       const list=document.getElementById('add-subs-list');if(!list)throw new Error('Subtitle dialog is not available');
