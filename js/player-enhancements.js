@@ -85,8 +85,10 @@
     const appearance=Array.from(body.querySelectorAll('.settings-card')).find(el=>el.querySelector('h4')?.textContent.trim()==='Appearance');
     if(!appearance||appearance.querySelector('#vlc-global-visual-effects'))return;
     const section=document.createElement('div');section.id='vlc-global-visual-effects';
-    section.innerHTML='<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--div-dim)"><h4 style="margin:0 0 8px">Visual Effects</h4>'+rangeRow('Interface glass blur','uiBlur',0,40,1,'px','vlc-global-')+rangeRow('Album-art background blur','artBlur',0,50,1,'px','vlc-global-')+rangeRow('Artwork reflection strength','reflection',0,100,1,'%','vlc-global-')+'<p class="vlc-enhancement-note">Effects apply immediately to the player interface and album artwork.</p></div>';
+    section.innerHTML='<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--div-dim)"><h4 style="margin:0 0 8px">Visual Effects</h4>'+rangeRow('Interface glass blur','uiBlur',0,40,1,'px','vlc-global-')+rangeRow('Album-art background blur','artBlur',0,50,1,'px','vlc-global-')+rangeRow('Artwork reflection strength','reflection',0,100,1,'%','vlc-global-')+'<p class="vlc-enhancement-note">Effects apply immediately to the player interface and album artwork.</p><h4 style="margin:14px 0 6px">Offline Codec Engine</h4><p class="vlc-enhancement-note" id="vlc-codec-engine-status">Checking codec engine…</p></div>';
     appearance.appendChild(section);
+    const codecStatus=document.getElementById('vlc-codec-engine-status');
+    if(codecStatus){const status=window.VLCOfflineCodecEngine?.getStatus?.();codecStatus.textContent=status?.available?'Native engine connected: '+status.name:'Browser-only mode. Native offline HEVC/H.265 decoding requires a desktop libVLC host.';}
     ['uiBlur','artBlur','reflection'].forEach(k=>{const el=document.getElementById('vlc-global-'+k);el.addEventListener('input',()=>{cfg[k]=Number(el.value);document.getElementById('vlc-global-'+k+'-out').textContent=el.value+(k==='reflection'?'%':'px');save();applyLook();});});
   }
   function currentVideoTitle(){
