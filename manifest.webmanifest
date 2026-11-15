@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "VLC New Theme HTML Player",
+  "short_name": "VLC Player",
+  "description": "A browser-based media player interface by Avinash Jadhav.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#D37918",
+  "icons": [
+    { "src": "icons/player-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
