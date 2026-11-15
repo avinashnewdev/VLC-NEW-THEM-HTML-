@@ -64,6 +64,7 @@
   <script>
     // Official YouTube IFrame Player API — embedded playback only.
     let ytPlayer;
+    let pendingVideoId = null;
     function getVideoId(input){
       const value=input.trim();
       if(/^[a-zA-Z0-9_-]{11}$/.test(value)) return value;
@@ -78,16 +79,20 @@
       }catch(e){}
       return null;
     }
-    window.onYouTubeIframeAPIReady=function(){
-      // Player is created only after the visitor supplies a video URL.
-    };
-    document.getElementById('load-youtube').addEventListener('click',()=>{
-      const id=getVideoId(document.getElementById('youtube-url').value);
-      if(!id){alert('Please enter a valid YouTube video URL or 11-character video ID.');return;}
+    function createYouTubePlayer(id){
       const screen=document.getElementById('youtube-screen');
       screen.innerHTML='<div id="yt-player" style="width:100%;height:100%"></div>';
       if(ytPlayer && ytPlayer.loadVideoById){ytPlayer.loadVideoById(id);return;}
       ytPlayer=new YT.Player('yt-player',{width:'100%',height:'100%',videoId:id,playerVars:{playsinline:1,rel:0}});
+    }
+    window.onYouTubeIframeAPIReady=function(){
+      if(pendingVideoId){createYouTubePlayer(pendingVideoId);pendingVideoId=null;}
+    };
+    document.getElementById('load-youtube').addEventListener('click',()=>{
+      const id=getVideoId(document.getElementById('youtube-url').value);
+      if(!id){alert('Please enter a valid YouTube video URL or 11-character video ID.');return;}
+      if(window.YT && YT.Player){createYouTubePlayer(id);}
+      else{pendingVideoId=id;document.getElementById('youtube-screen').innerHTML='<div class="placeholder">Connecting to YouTube…</div>';}
     });
     const tag=document.createElement('script');
     tag.src='https://www.youtube.com/iframe_api';
