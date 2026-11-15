@@ -21,7 +21,7 @@
         const attr=k=>{const m=attrs.match(new RegExp('(?:^|\\s)'+k+'="([^"]*)"','i'));return m?m[1]:'';};
         meta={name:title||'Untitled channel',logo:attr('tvg-logo'),group:attr('group-title'),kind:/radio|audio/i.test(attr('group-title'))?'audio':'video'};
       } else if(line.startsWith('#EXTGRP:')) meta.group=line.slice(8).trim();
-      else if(!line.startsWith('#')){const url=safeUrl(line);if(url){const audioExt=/\\.(?:mp3|aac|m4a|flac|wav|ogg|opus|wma|aiff)(?:$|[?#])/i.test(url);out.push({...meta,kind:meta.kind==='audio'||audioExt?'audio':'video',url});}meta={};if(out.length>=LIMIT)break;}
+      else if(!line.startsWith('#')){const url=safeUrl(line);if(url){const audioExt=/\.(?:mp3|aac|m4a|flac|wav|ogg|opus|wma|aiff)(?:$|[?#])/i.test(url);out.push({...meta,kind:meta.kind==='audio'||audioExt?'audio':'video',url});}meta={};if(out.length>=LIMIT)break;}
     }
     if(!out.length)throw Error('No valid HTTP(S) stream URLs were found.');
     return {name:String(name||'Imported playlist').slice(0,100),entries:out,addedAt:Date.now()};
