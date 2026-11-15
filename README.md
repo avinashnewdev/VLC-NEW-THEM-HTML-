@@ -86,3 +86,15 @@ Made by **Avinash Jadhav**.
 The experimental FFmpeg/WebAssembly transcode button and CDN loader have been removed. The replacement `js/offline-codec-engine.js` is a standalone integration adapter: it can use a desktop host exposed as `window.vlcNative` for native decoding, audio-track selection and subtitle loading, and it provides browser-native track/subtitle helpers where supported.
 
 **Important:** this HTML/PWA build does not contain a native VLC/libVLC decoder. A browser JavaScript file cannot become VLC's native codec engine or guarantee offline HEVC/H.265 decoding on every device. The adapter reports native-engine availability instead of pretending unsupported codecs are decoded. Reliable offline HEVC/H.265, multi-audio and subtitle support requires packaging this UI in a desktop shell (for example Electron/Tauri) and implementing the host bridge with a licensed, correctly packaged libVLC build. Browser playback remains subject to browser/OS codec support.
+
+
+## Native Windows desktop build (Electron + libVLC)
+
+The optional `desktop/` project wraps this HTML interface in Electron and provides a native libVLC host for local offline media. It is separate from the GitHub Pages/PWA build.
+
+- Setup and build instructions: [desktop/README.md](desktop/README.md)
+- Electron main process: [desktop/main.cjs](desktop/main.cjs)
+- Secure renderer bridge: [desktop/preload.cjs](desktop/preload.cjs)
+- libVLC native host: [desktop/native/libvlc-host.cjs](desktop/native/libvlc-host.cjs)
+
+The first native video-surface implementation targets Windows x64. You must supply a complete, architecture-matched libVLC runtime including its `plugins/` directory. Native audio/subtitle track APIs and HEVC support depend on the bundled libVLC build. The desktop integration has not yet been compiled or tested on a Windows machine; do not treat the scaffold as a release-ready installer. Linux/macOS native surfaces remain future work.
