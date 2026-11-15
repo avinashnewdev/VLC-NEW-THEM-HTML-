@@ -11,6 +11,7 @@
   const say=(msg,bad)=>{const el=byId('iptv-status');if(el){el.textContent=msg;el.style.color=bad?'#e88':'var(--fg-a2)';}};
   function parse(text,name){
     if(typeof text!=='string'||text.length>MAX)throw Error('Playlist exceeds the 8 MB safety limit.');
+    if(/^#EXT-X-(?:TARGETDURATION|STREAM-INF|MEDIA-SEQUENCE|ENDLIST)/mi.test(text))throw Error('This is an HLS media manifest, not a channel list. Add its URL using Open Network Stream instead.');
     const out=[];let meta={};
     for(const raw of text.replace(/^\uFEFF/,'').split(/\r?\n/)){
       const line=raw.trim();if(!line)continue;
