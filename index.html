@@ -3873,7 +3873,9 @@
   // Narrow integration bridge for the separate IPTV module.
   window.VLCNetworkBridge = {
     addAndPlay(entry) {
-      if (!entry || !/^https?:\\/\\//i.test(entry.url || '')) throw new Error('Only HTTP(S) stream URLs are supported.');
+      if (!entry || !entry.url) throw new Error('A stream URL is required.');
+      const parsedUrl = new URL(entry.url);
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error('Only HTTP(S) stream URLs are supported.');
       const audio = entry.kind === 'audio';
       const title = String(entry.name || entry.url).slice(0, 180);
       const item = { id: 'iptv_' + Date.now() + '_' + Math.random().toString(36).slice(2,8), title, cleanTitle:title, fullTitle:title, artist:entry.group || 'IPTV', folder:'Network', fileSize:0, mimeType:audio?'audio/stream':'video/stream', dur:0, durStr:'LIVE', progress:0, watched:false, favorite:false, isAudio:audio, isYouTube:false, autoDetectStream:false, localUrl:entry.url, addedAt:Date.now(), thumb:entry.logo || (audio?DEFAULT_AUDIO_COVER:DEFAULT_VIDEO_THUMB), cover:entry.logo || DEFAULT_AUDIO_COVER, hero:DEFAULT_VIDEO_THUMB };
