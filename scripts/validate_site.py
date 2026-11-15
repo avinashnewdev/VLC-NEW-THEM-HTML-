@@ -57,7 +57,7 @@ required = [
     ROOT / "js/video-codec-compat.js", ROOT / "js/youtube-playlists.js",
     ROOT / "js/zoom-panel-behavior.js", ROOT / "js/miniplayer-video.js",
     ROOT / "js/pwa-install.js", ROOT / "js/offline-codec-engine.js",
-    ROOT / "js/player-enhancements.js",
+    ROOT / "js/player-enhancements.js", ROOT / "js/bubble-interaction.js",
 ]
 for path in required:
     if not path.is_file():
@@ -98,7 +98,7 @@ except (ValueError, OSError) as exc:
 
 js_files = [
     "js/network-playlists.js", "js/video-codec-compat.js", "js/youtube-playlists.js",
-    "js/zoom-panel-behavior.js", "js/miniplayer-video.js", "js/pwa-install.js", "js/offline-codec-engine.js", "js/player-enhancements.js", "sw.js",
+    "js/zoom-panel-behavior.js", "js/miniplayer-video.js", "js/pwa-install.js", "js/offline-codec-engine.js", "js/player-enhancements.js", "js/bubble-interaction.js", "sw.js",
 ]
 for relative in js_files:
     try:
