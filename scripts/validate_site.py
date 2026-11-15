@@ -2,6 +2,7 @@
 """Lightweight repository-integrity checks for the VLC HTML site."""
 from html.parser import HTMLParser
 from pathlib import Path
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -76,6 +77,10 @@ if "css/network-playlists.css" not in html_text or "js/network-playlists.js" not
     fail("Network playlist CSS/JS modules are not linked from index.html.")
 if "VLCNetworkBridge" not in html_text:
     fail("Network player bridge is missing.")
+try:
+    subprocess.run(["node", "--check", str(ROOT / "js/network-playlists.js")], check=True, capture_output=True, text=True)
+except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+    fail("IPTV JavaScript syntax check failed: " + (getattr(exc, "stderr", "") or str(exc)))
 if parser.duplicate_ids:
     fail("Duplicate HTML id attributes: " + ", ".join(sorted(set(parser.duplicate_ids))))
 
