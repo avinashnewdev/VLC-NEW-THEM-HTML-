@@ -56,7 +56,8 @@ required = [
     ROOT / "css/miniplayer-video.css", ROOT / "js/network-playlists.js",
     ROOT / "js/video-codec-compat.js", ROOT / "js/youtube-playlists.js",
     ROOT / "js/zoom-panel-behavior.js", ROOT / "js/miniplayer-video.js",
-    ROOT / "js/pwa-install.js",
+    ROOT / "js/pwa-install.js", ROOT / "js/ffmpeg-wasm-decoder.js",
+    ROOT / "js/player-enhancements.js",
 ]
 for path in required:
     if not path.is_file():
@@ -81,7 +82,7 @@ for asset in (
     "manifest.webmanifest", "css/network-playlists.css", "css/zoom-panel-behavior.css",
     "css/miniplayer-video.css", "js/network-playlists.js", "js/video-codec-compat.js",
     "js/youtube-playlists.js", "js/zoom-panel-behavior.js", "js/miniplayer-video.js",
-    "js/pwa-install.js",
+    "js/pwa-install.js", "js/ffmpeg-wasm-decoder.js", "js/player-enhancements.js",
 ):
     if asset not in html_text:
         fail(f"Homepage does not link required module: {asset}")
@@ -97,7 +98,7 @@ except (ValueError, OSError) as exc:
 
 js_files = [
     "js/network-playlists.js", "js/video-codec-compat.js", "js/youtube-playlists.js",
-    "js/zoom-panel-behavior.js", "js/miniplayer-video.js", "js/pwa-install.js", "sw.js",
+    "js/zoom-panel-behavior.js", "js/miniplayer-video.js", "js/pwa-install.js", "js/ffmpeg-wasm-decoder.js", "js/player-enhancements.js", "sw.js",
 ]
 for relative in js_files:
     try:
