@@ -2052,6 +2052,7 @@
     .shortcut-grid { grid-template-columns: 1fr; }
   }
 </style>
+  <link rel="stylesheet" href="css/network-playlists.css">
 </head>
 <body>
 
@@ -3869,6 +3870,18 @@
     showToast(`Playing: ${item.cleanTitle || item.fullTitle || item.title}`);
   }
 
+  // Narrow integration bridge for the separate IPTV module.
+  window.VLCNetworkBridge = {
+    addAndPlay(entry) {
+      if (!entry || !/^https?:\\/\\//i.test(entry.url || '')) throw new Error('Only HTTP(S) stream URLs are supported.');
+      const audio = entry.kind === 'audio';
+      const title = String(entry.name || entry.url).slice(0, 180);
+      const item = { id: 'iptv_' + Date.now() + '_' + Math.random().toString(36).slice(2,8), title, cleanTitle:title, fullTitle:title, artist:entry.group || 'IPTV', folder:'Network', fileSize:0, mimeType:audio?'audio/stream':'video/stream', dur:0, durStr:'LIVE', progress:0, watched:false, favorite:false, isAudio:audio, isYouTube:false, autoDetectStream:false, localUrl:entry.url, addedAt:Date.now(), thumb:entry.logo || (audio?DEFAULT_AUDIO_COVER:DEFAULT_VIDEO_THUMB), cover:entry.logo || DEFAULT_AUDIO_COVER, hero:DEFAULT_VIDEO_THUMB };
+      if (audio) SONGS.push(item); else EPISODES.push(item);
+      if (!state.queueIds.includes(item.id)) state.queueIds.push(item.id);
+      playMediaItem(item, audio); return item.id;
+    }
+  };
   function initMediaElementEvents() {
     const realVid = document.getElementById('real-video-el');
     const netVid = document.getElementById('net-video-el');
@@ -7568,5 +7581,7 @@
   });
 })();
 </script>
+
+<script src="js/network-playlists.js" defer></script>
 </body>
 </html>
