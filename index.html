@@ -3899,18 +3899,50 @@
     showToast(`Playing: ${item.cleanTitle || item.fullTitle || item.title}`);
   }
 
-  // Narrow integration bridge for the separate IPTV module.
+  // Integration bridge for online IPTV playlists. All entries are added to the
+  // player queue before playback starts, so Next/Previous can traverse the list.
   window.VLCNetworkBridge = {
     addAndPlay(entry) {
-      if (!entry || !entry.url) throw new Error('A stream URL is required.');
-      const parsedUrl = new URL(entry.url);
-      if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error('Only HTTP(S) stream URLs are supported.');
-      const audio = entry.kind === 'audio';
-      const title = String(entry.name || entry.url).slice(0, 180);
-      const item = { id: 'iptv_' + Date.now() + '_' + Math.random().toString(36).slice(2,8), title, cleanTitle:title, fullTitle:title, artist:entry.group || 'IPTV', folder:'Network', fileSize:0, mimeType:audio?'audio/stream':'video/stream', dur:0, durStr:'LIVE', progress:0, watched:false, favorite:false, isAudio:audio, isYouTube:false, autoDetectStream:false, localUrl:entry.url, addedAt:Date.now(), thumb:entry.logo || (audio?DEFAULT_AUDIO_COVER:DEFAULT_VIDEO_THUMB), cover:entry.logo || DEFAULT_AUDIO_COVER, hero:DEFAULT_VIDEO_THUMB };
-      if (audio) SONGS.push(item); else EPISODES.push(item);
-      if (!state.queueIds.includes(item.id)) state.queueIds.push(item.id);
-      playMediaItem(item, audio); return item.id;
+      const items = this.addPlaylist([entry], entry && entry.playlistName);
+      if (!items.length) throw new Error('A valid stream URL is required.');
+      playMediaItem(items[0], items[0].isAudio);
+      return items[0].id;
+    },
+    addPlaylist(entries, playlistName) {
+      if (!Array.isArray(entries) || !entries.length) throw new Error('The playlist contains no playable streams.');
+      const created = [];
+      entries.forEach((entry, index) => {
+        if (!entry || !entry.url) return;
+        let parsedUrl;
+        try { parsedUrl = new URL(entry.url); } catch (e) { return; }
+        if (!['http:', 'https:'].includes(parsedUrl.protocol)) return;
+        const audio = entry.kind === 'audio';
+        const title = String(entry.name || entry.url).slice(0, 180);
+        const item = {
+          id: 'iptv_' + Date.now() + '_' + index + '_' + Math.random().toString(36).slice(2,8),
+          title, cleanTitle:title, fullTitle:title, artist:entry.group || playlistName || 'IPTV',
+          folder:'Network', fileSize:0, mimeType:audio?'audio/stream':'video/stream',
+          dur:0, durStr:'LIVE', progress:0, watched:false, favorite:false,
+          isAudio:audio, isYouTube:false, autoDetectStream:false, localUrl:parsedUrl.href,
+          addedAt:Date.now()+index, thumb:entry.logo || (audio?DEFAULT_AUDIO_COVER:DEFAULT_VIDEO_THUMB),
+          cover:entry.logo || DEFAULT_AUDIO_COVER, hero:DEFAULT_VIDEO_THUMB
+        };
+        if (audio) SONGS.push(item); else EPISODES.push(item);
+        created.push(item);
+      });
+      if (!created.length) throw new Error('No valid HTTP(S) stream URLs were found in this playlist.');
+      return created;
+    },
+    addPlaylistAndPlay(entries, playlistName) {
+      const items = this.addPlaylist(entries, playlistName);
+      state.queueIds = items.map(item => item.id);
+      state.shuffle = false;
+      state.repeat = false;
+      playMediaItem(items[0], items[0].isAudio);
+      renderQueuePopover();
+      renderLibraryContent();
+      showToast('Playing playlist: ' + String(playlistName || 'Online Playlist') + ' (' + items.length + ' channels)');
+      return items.length;
     }
   };
   function initMediaElementEvents() {
