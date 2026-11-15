@@ -21,7 +21,7 @@
         const attr=k=>{const m=attrs.match(new RegExp('(?:^|\\s)'+k+'="([^"]*)"','i'));return m?m[1]:'';};
         meta={name:title||'Untitled channel',logo:attr('tvg-logo'),group:attr('group-title'),kind:/radio|audio/i.test(attr('group-title'))?'audio':'video'};
       } else if(line.startsWith('#EXTGRP:')) meta.group=line.slice(8).trim();
-      else if(!line.startsWith('#')){const url=safeUrl(line);if(url)out.push({...meta,url});meta={};if(out.length>=LIMIT)break;}
+      else if(!line.startsWith('#')){const url=safeUrl(line);if(url){const audioExt=/\\.(?:mp3|aac|m4a|flac|wav|ogg|opus|wma|aiff)(?:$|[?#])/i.test(url);out.push({...meta,kind:meta.kind==='audio'||audioExt?'audio':'video',url});}meta={};if(out.length>=LIMIT)break;}
     }
     if(!out.length)throw Error('No valid HTTP(S) stream URLs were found.');
     return {name:String(name||'Imported playlist').slice(0,100),entries:out,addedAt:Date.now()};
@@ -30,7 +30,7 @@
     const root=byId('iptv-manager-root');if(!root)return;
     const p=lists[selected];
     root.innerHTML='<div class="iptv-playlist-list">'+lists.map((x,i)=>'<button class="iptv-playlist-chip '+(i===selected?'active':'')+'" data-pl="'+i+'">'+esc(x.name)+' · '+x.entries.length+'</button>').join('')+'</div>'+
-      '<div class="iptv-toolbar"><input class="iptv-search" id="iptv-search" type="search" placeholder="Search channels…">'+(p?'<button class="btn-secondary" id="iptv-remove">Remove playlist</button>':'')+'</div><div class="iptv-channel-list" id="iptv-channels"></div>';
+      '<div class="iptv-toolbar"><input class="iptv-search" id="iptv-search" type="search" placeholder="Search channels…">'+(p?'<button class="btn-primary" id="iptv-play-all" '+(!p.entries.length?'disabled':'')+'>▶ Play Full Playlist ('+p.entries.length+')</button><button class="btn-secondary" id="iptv-remove">Remove playlist</button>':'')+'</div><div class="iptv-channel-list" id="iptv-channels"></div>';
     const search=byId('iptv-search');if(search){search.value=query;search.addEventListener('input',()=>{query=search.value.toLowerCase();renderChannels();});}
     renderChannels();
   }
@@ -72,7 +72,7 @@
       byId('iptv-export').addEventListener('click',exportList);byId('iptv-fetch').addEventListener('click',importUrl);
       panel.addEventListener('click',e=>{
         const chip=e.target.closest('[data-pl]');if(chip){selected=Number(chip.dataset.pl);query='';render();return;}
-        if(e.target.id==='iptv-remove'){lists.splice(selected,1);selected=Math.max(0,selected-1);query='';save();render();return;}
+        if(e.target.id==='iptv-remove'){lists.splice(selected,1);selected=Math.max(0,selected-1);query='';save();render();return;}\n        if(e.target.id==='iptv-play-all'){const current=lists[selected];if(!current)return;try{if(!window.VLCNetworkBridge?.addPlaylistAndPlay)throw Error('Online player integration unavailable; reload the app.');window.VLCNetworkBridge.addPlaylistAndPlay(current.entries,current.name);say('Playing all '+current.entries.length+' playlist entries.');}catch(err){say(err.message,true);}return;}
         const play=e.target.closest('[data-play]');if(play){const item=lists[selected]&&lists[selected].entries[Number(play.dataset.play)];if(!item)return;
           try{if(!window.VLCNetworkBridge)throw Error('Player integration unavailable; reload the page.');window.VLCNetworkBridge.addAndPlay({...item,playlistName:lists[selected].name});say('Playing '+item.name);}catch(err){say(err.message,true);}}
       });
