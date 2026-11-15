@@ -2872,7 +2872,7 @@
     recordingStartTime: 0,
     theme: 'dark',
     accent: ACCENT_COLORS[0],
-    profile: 'Movies',
+    profile: '',
     libraryOpen: false,
     libTab: 'videos',
     libView: 'grid',
@@ -6474,11 +6474,8 @@
           document.getElementById('modal-add-subs').classList.add('open');
         }
         else if (act === 'cycle-profile') {
-          const profiles = ['Movies', 'Default Preset', 'Anime', 'Loud and then Quiet Movies', 'Music Studio'];
-          const idx = (profiles.indexOf(state.profile) + 1) % profiles.length;
-          state.profile = profiles[idx];
-          document.getElementById('menu-profile-lbl').textContent = `Profile (${state.profile})`;
-          showToast(`Switched Profile: ${state.profile}`);
+          openSettingsModal('global');
+          document.getElementById('vlc-profile-tab')?.click();
         } else if (act === 'shortcuts') {
           renderShortcutsTable();
           document.getElementById('modal-shortcuts').classList.add('open');
@@ -7625,5 +7622,7 @@
 <script src="js/miniplayer-video.js" defer></script>
 <script src="js/pwa-install.js" defer></script>
 <script src="js/network-playlists.js" defer></script>
+<script src="js/ffmpeg-wasm-decoder.js" defer></script>
+<script src="js/player-enhancements.js" defer></script>
 </body>
 </html>
