@@ -16,17 +16,13 @@
 
 ## About
 
-VLC New Theme HTML is an independently developed HTML-based media-player theme project by **Avinash Jadhav**. Version **1.0** introduces a browser-based demonstration shell with an accessible interface for local audio and official YouTube embedded playback.
-
-The current repository initially contained only a short README; no original player HTML, project assets, or supplied logo file were present when this documentation and deployment foundation were added. The demo page is therefore a starter preview, not a claim that the complete original player has been migrated.
+VLC New Theme HTML is an independently developed HTML-based media-player interface project by **Avinash Jadhav**. The live homepage uses the original uploaded file `vlc_media_player_redesign_community (4).html` from this repository, published as `index.html` for GitHub Pages. The original top-left VLC cone icon is part of that HTML (inline SVG), so no replacement logo has been substituted. Version **1.0** is the documentation/deployment release label; the original player design and code have been retained.
 
 ## Version 1.0 — included in this repository
 
-- Responsive dark media-player demo interface.
-- Local audio file selection using the browser's native file input.
-- Audio playback using the HTMLAudioElement and Web Audio API (Web Audio visual analyser).
-- YouTube playback through the official YouTube IFrame Player API.
-- GitHub Actions workflow to publish the static site to GitHub Pages.
+- Original VLC-inspired player HTML published as the site homepage.
+- Original top-left VLC cone icon retained from the HTML source.
+- GitHub Actions workflow to publish the repository root to GitHub Pages.
 - Project attribution, proprietary terms, and basic security guidance.
 
 ## Planned HTML roadmap
