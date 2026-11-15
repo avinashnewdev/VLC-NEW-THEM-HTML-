@@ -81,7 +81,7 @@
   window.VLCNetworkManager={mount,parse};
   document.addEventListener('DOMContentLoaded',()=>{
     const body=byId('lib-dynamic-body');if(!body)return;
-    new MutationObserver(mount).observe(body,{childList:true,subtree:true});
+    new MutationObserver(mount).observe(body,{childList:true,subtree:false});
     const nav=document.querySelector('[data-lib-tab="network"]');if(nav)nav.addEventListener('click',()=>setTimeout(mount,0));
     mount();
   });
