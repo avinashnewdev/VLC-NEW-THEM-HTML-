@@ -1,11 +1,11 @@
 /* Same-origin app-shell cache. External media/streams are never cached. */
-const CACHE_NAME = 'vlc-player-shell-v4';
+const CACHE_NAME = 'vlc-player-shell-v5';
 const APP_SHELL = [
   './', './index.html', './manifest.webmanifest',
   './js/network-playlists.js', './js/video-codec-compat.js',
   './js/youtube-playlists.js', './js/zoom-panel-behavior.js',
   './js/miniplayer-video.js', './js/pwa-install.js',
-  './js/offline-codec-engine.js', './js/player-enhancements.js',
+  './js/offline-codec-engine.js', './js/player-enhancements.js', './js/bubble-interaction.js',
   './css/network-playlists.css', './css/zoom-panel-behavior.css',
   './css/miniplayer-video.css', './icons/player-icon.svg'
 ];
