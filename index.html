@@ -7531,13 +7531,14 @@
             const bh = Math.max(6, Math.min(h - 10, norm * (h - 14)));
             const x = i * (bw + 6);
             const y = (h - bh) / 2;
-            visCtx.fillStyle = i % 3 === 0 ? accent : 'rgba(234,234,234,0.65)';
+            const artworkColor = getComputedStyle(document.documentElement).getPropertyValue('--vlc-art-spectrum').trim() || accent;
+            visCtx.fillStyle = i % 3 === 0 ? artworkColor : 'rgba(234,234,234,0.65)';
             visCtx.beginPath();
             visCtx.roundRect(x, y, bw, bh, 3);
             visCtx.fill();
           }
         } else if (state.visualizerMode === 'Waveform' || state.visualizerMode === 'Scope') {
-          visCtx.strokeStyle = accent;
+          visCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--vlc-art-spectrum').trim() || accent;
           visCtx.lineWidth = 2.5;
           visCtx.beginPath();
           if (hasLiveFreq && timeDataArray) {
