@@ -1,0 +1,16 @@
+/* Separate, scoped IPTV manager styles. */
+.network-manager-panel{background:var(--bg-a4);border:1px solid var(--div-dim);border-radius:12px;padding:16px;margin:12px 0}
+.network-manager-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.network-manager-head h3{margin:0;color:var(--fg-1);font-size:16px}.network-manager-head p,.network-import-note{margin:5px 0 0;color:var(--fg-a2);font-size:12px;line-height:1.5}
+.network-manager-actions,.iptv-toolbar,.iptv-playlist-list{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.network-import-row{display:flex;gap:8px;margin-top:14px}
+.network-manager-panel input{min-width:0;background:var(--bg-b1);border:1px solid var(--div-bright);border-radius:7px;padding:9px 11px;color:var(--fg-1)}
+.network-import-row input,.iptv-search{flex:1}
+.iptv-playlist-list{margin:12px 0}.iptv-playlist-chip{border:1px solid var(--div-bright);background:var(--bg-a5);color:var(--fg-2);padding:7px 10px;border-radius:7px;cursor:pointer;font-size:12px}
+.iptv-playlist-chip.active{border-color:var(--accent);color:var(--fg-1);background:var(--accent-bg)}
+.iptv-channel-list{display:flex;flex-direction:column;gap:5px;max-height:420px;overflow:auto}
+.iptv-channel{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--div-dim);border-radius:8px;background:var(--bg-b1);min-width:0}
+.iptv-channel img{width:34px;height:34px;object-fit:contain;border-radius:5px}.iptv-channel-main{flex:1;min-width:0}
+.iptv-channel-name{display:block;color:var(--fg-1);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iptv-channel-meta{display:block;color:var(--fg-a3);font-size:11px;margin-top:3px}.iptv-empty{padding:22px;text-align:center;color:var(--fg-a2);border:1px dashed var(--div-bright);border-radius:8px}
+@media(max-width:640px){.network-import-row{flex-direction:column}.network-manager-panel{padding:12px}}
