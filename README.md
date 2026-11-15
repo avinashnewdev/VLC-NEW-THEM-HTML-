@@ -71,3 +71,26 @@ GitHub Actions [workflow](.github/workflows/pages.yml) validates the project and
 
 ---
 Made by **Avinash Jadhav**.
+
+
+## User profiles, visual customization and online subtitles
+
+- **Profile & Appearance** in Settings lets the user create, edit or delete a local profile. No sample or preset user profiles are created. Profile fields and visual preferences are stored in this browser's local storage and are not synced to a server.
+- **Customize Player → Visual effects** provides interface glass blur, album-art background blur and artwork reflection controls. Settings are applied locally and persisted in the browser.
+- The music spectrum reads the current album-art image palette where the browser permits canvas pixel access. Cross-origin artwork without CORS permission falls back to the player's accent color.
+- **Online subtitles** uses the OpenSubtitles API. The user must supply their own OpenSubtitles API key in Settings → Profile & Appearance. Search uses the currently loaded media title where it can be detected. API limits, CORS, account and provider rules apply. API keys are stored locally in this browser; do not use a shared/public computer for private keys.
+
+## Optional FFmpeg/WebAssembly decoder
+
+The separate `js/ffmpeg-wasm-decoder.js` module exposes `window.VLCSoftwareDecoder`. It loads FFmpeg WebAssembly only when requested, and provides `decode(file, options)` for a local File/Blob, returning a playable object URL and a `revoke()` cleanup method. Example:
+
+```js
+const result = await VLCSoftwareDecoder.decode(file, {
+  onProgress: progress => console.log(Math.round(progress * 100) + '%')
+});
+videoElement.src = result.url;
+// When playback is finished:
+result.revoke();
+```
+
+This module is an optional decoder utility, not a transparent replacement for every browser playback path. Transcoding is CPU- and memory-intensive, may be slow on large/high-resolution files, and output codecs depend on the selected FFmpeg build. The module currently transcodes to H.264/AAC MP4 by default; it does not promise universal playback of every codec or profile. The FFmpeg wrapper/core are loaded from public CDN URLs on demand. Review the applicable FFmpeg and WebAssembly package licenses before redistributing a bundled build.
