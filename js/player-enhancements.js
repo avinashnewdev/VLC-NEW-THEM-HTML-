@@ -44,8 +44,8 @@
     btn.addEventListener('click',renderProfileSettings);
   }
   function card(title,html){return '<section class="settings-card"><h4>'+title+'</h4>'+html+'</section>';}
-  function rangeRow(label,key,min,max,step,unit){
-    const val=cfg[key];return '<div class="vlc-enhancement-row"><label for="vlc-'+key+'">'+label+'</label><input id="vlc-'+key+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"><output id="vlc-'+key+'-out">'+val+unit+'</output></div>';
+  function rangeRow(label,key,min,max,step,unit,prefix='vlc-'){
+    const id=prefix+key;const val=cfg[key];return '<div class="vlc-enhancement-row"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"><output id="'+id+'-out">'+val+unit+'</output></div>';
   }
   function renderProfileSettings(){
     const body=document.getElementById('settings-cat-body');if(!body)return;
@@ -64,9 +64,9 @@
   function addCustomizeControls(){
     const box=document.querySelector('#customize-modal .customize-box');if(!box||document.getElementById('vlc-visual-customize'))return;
     const section=document.createElement('section');section.id='vlc-visual-customize';section.className='settings-card';section.style.marginTop='14px';
-    section.innerHTML='<h4>Visual effects</h4>'+rangeRow('Interface glass blur','uiBlur',0,40,1,'px')+rangeRow('Album-art background blur','artBlur',0,50,1,'px')+rangeRow('Artwork reflection strength','reflection',0,100,1,'%')+'<button class="vlc-enhancement-action" id="vlc-open-profile-settings">More profile & subtitle settings</button>';
+    section.innerHTML='<h4>Visual effects</h4>'+rangeRow('Interface glass blur','uiBlur',0,40,1,'px','vlc-custom-')+rangeRow('Album-art background blur','artBlur',0,50,1,'px','vlc-custom-')+rangeRow('Artwork reflection strength','reflection',0,100,1,'%','vlc-custom-')+'<button class="vlc-enhancement-action" id="vlc-open-profile-settings">More profile & subtitle settings</button>';
     box.appendChild(section);
-    ['uiBlur','artBlur','reflection'].forEach(k=>{const el=document.getElementById('vlc-'+k);el.addEventListener('input',()=>{cfg[k]=Number(el.value);document.getElementById('vlc-'+k+'-out').textContent=el.value+(k==='reflection'?'%':'px');save();applyLook();});});
+    ['uiBlur','artBlur','reflection'].forEach(k=>{const el=document.getElementById('vlc-custom-'+k);el.addEventListener('input',()=>{cfg[k]=Number(el.value);document.getElementById('vlc-custom-'+k+'-out').textContent=el.value+(k==='reflection'?'%':'px');save();applyLook();});});
     document.getElementById('vlc-open-profile-settings').onclick=()=>{const modal=document.getElementById('modal-settings');document.querySelectorAll('.modal-backdrop').forEach(m=>m.classList.remove('open'));modal.classList.add('open');addSettingsTab();renderProfileSettings();};
   }
   function currentVideoTitle(){
