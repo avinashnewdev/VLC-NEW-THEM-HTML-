@@ -67,7 +67,7 @@ Open http://localhost:8000. PWA installation and service workers require localho
 
 ## Deployment and validation
 
-GitHub Actions validates the project and publishes the repository root to GitHub Pages on pushes to `main`. See the Actions link above for the latest run.
+GitHub Actions [workflow](.github/workflows/pages.yml) validates the project and publishes the repository root to GitHub Pages on pushes to `main`. See the [Actions history](https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-/actions) for the latest run.
 
 ---
 Made by **Avinash Jadhav**.
