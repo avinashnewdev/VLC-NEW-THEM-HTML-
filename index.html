@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10131d">
+  <meta name="description" content="VLC New Theme HTML — a media player interface preview by Avinash Jadhav.">
+  <title>VLC New Theme HTML · v1.0</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0c0f18;--panel:rgba(25,30,46,.78);--line:rgba(255,255,255,.1);--muted:#a7aec2;--accent:#ff8a32;--accent2:#ffbf69}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 15% 0%,#26324c 0,transparent 42%),radial-gradient(ellipse at 90% 90%,#38233a 0,transparent 38%),var(--bg);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;color:#f5f6fb}
+    .wrap{width:min(1100px,calc(100% - 32px));margin:0 auto;padding:28px 0 40px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px}
+    .brand{display:flex;align-items:center;gap:12px}.mark{width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,var(--accent2),#f05c31);display:grid;place-items:center;box-shadow:0 8px 30px #ff852744}.mark svg{width:25px}
+    h1{font-size:clamp(23px,4vw,34px);margin:0;letter-spacing:-.04em}.sub,.muted{color:var(--muted)}.version{border:1px solid var(--line);border-radius:99px;padding:7px 12px;color:#ffd2aa;font-size:13px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr);gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 20px 60px #0003;backdrop-filter:blur(18px)}
+    h2{font-size:17px;margin:0 0 14px}.screen{aspect-ratio:16/9;background:#080a10;border:1px solid var(--line);border-radius:15px;overflow:hidden;display:grid;place-items:center}.screen iframe{width:100%;height:100%;border:0}.placeholder{text-align:center;padding:20px;color:var(--muted)}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}button,.filebtn{border:1px solid var(--line);background:#ffffff0c;color:#fff;border-radius:12px;padding:10px 14px;font:inherit;cursor:pointer}button.primary{background:linear-gradient(120deg,var(--accent),#ef6338);border:0;color:#1a1010;font-weight:700}button:hover,.filebtn:hover{filter:brightness(1.13)}input[type=file]{display:none}
+    input[type=text]{width:100%;min-width:0;background:#090c14;border:1px solid var(--line);color:#fff;border-radius:12px;padding:12px;font:inherit}.field{display:flex;gap:8px;margin-top:10px}.field button{flex-shrink:0}
+    audio{width:100%;margin-top:14px}.meter{height:58px;display:flex;align-items:end;gap:4px;margin-top:14px}.meter i{display:block;flex:1;min-width:2px;height:8%;border-radius:5px 5px 2px 2px;background:linear-gradient(var(--accent2),var(--accent));transition:height .12s}
+    .note{font-size:13px;color:var(--muted);margin:12px 0 0}.side{display:grid;gap:18px}.feature{padding:12px 0;border-bottom:1px solid var(--line)}.feature:last-child{border:0;padding-bottom:0}.feature b{display:block;margin-bottom:3px}
+    footer{margin-top:22px;text-align:center;color:var(--muted);font-size:13px}a{color:#ffc18d;text-decoration:none}a:hover{text-decoration:underline}
+    @media(max-width:760px){.layout{grid-template-columns:1fr}.top{align-items:flex-start}.panel{padding:16px}.wrap{width:min(100% - 22px,1100px);padding-top:18px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4.8v14.4L19 12 6 4.8Z" fill="#21140d"/></svg></div>
+        <div><h1>VLC New Theme HTML</h1><div class="sub">A media player interface preview · Creator: Avinash Jadhav</div></div>
+      </div>
+      <span class="version">VERSION 1.0</span>
+    </header>
+
+    <section class="layout">
+      <div class="panel">
+        <h2>YouTube player</h2>
+        <div class="screen" id="youtube-screen"><div class="placeholder">Paste a YouTube video URL or video ID below to load the official embedded player.</div></div>
+        <div class="field"><input id="youtube-url" type="text" placeholder="https://www.youtube.com/watch?v=..." aria-label="YouTube URL or video ID"><button class="primary" id="load-youtube">Load video</button></div>
+        <p class="note">Playback uses YouTube's official IFrame Player API. Some videos may block embedding. No YouTube audio extraction or downloading is performed.</p>
+      </div>
+
+      <aside class="side">
+        <section class="panel">
+          <h2>Local audio player</h2>
+          <label class="filebtn" for="audio-file">Choose audio file</label><input id="audio-file" type="file" accept="audio/*">
+          <div id="audio-name" class="note">No file selected. Audio stays in your browser.</div>
+          <audio id="audio-player" controls></audio>
+          <div class="meter" id="meter" aria-label="Audio visualizer"></div>
+          <p class="note">Web Audio API visualizer · Browser-supported audio formats only.</p>
+        </section>
+        <section class="panel">
+          <h2>About this project</h2>
+          <div class="feature"><b>Creator</b><span class="muted">Avinash Jadhav</span></div>
+          <div class="feature"><b>Version</b><span class="muted">1.0</span></div>
+          <div class="feature"><b>Project type</b><span class="muted">HTML / CSS / JavaScript preview</span></div>
+          <div class="feature"><b>Rights</b><span class="muted">Proprietary · All rights reserved</span></div>
+          <p class="note"><a href="https://github.com/avinashnewdev/VLC-NEW-THEM-HTML-">Source repository</a> · <a href="./LICENSE">License</a></p>
+        </section>
+      </aside>
+    </section>
+    <footer>© 2026 Avinash Jadhav. All Rights Reserved. · VLC New Theme HTML v1.0</footer>
+  </main>
+  <script>
+    // Official YouTube IFrame Player API — embedded playback only.
+    let ytPlayer;
+    function getVideoId(input){
+      const value=input.trim();
+      if(/^[a-zA-Z0-9_-]{11}$/.test(value)) return value;
+      try{
+        const url=new URL(value);
+        if(url.hostname.endsWith('youtu.be')) return url.pathname.slice(1,12);
+        if(url.hostname.includes('youtube.com')){
+          if(url.pathname==='/watch') return url.searchParams.get('v');
+          const match=url.pathname.match(/^\/(?:embed|shorts)\/([\w-]{11})/);
+          return match ? match[1] : null;
+        }
+      }catch(e){}
+      return null;
+    }
+    window.onYouTubeIframeAPIReady=function(){
+      // Player is created only after the visitor supplies a video URL.
+    };
+    document.getElementById('load-youtube').addEventListener('click',()=>{
+      const id=getVideoId(document.getElementById('youtube-url').value);
+      if(!id){alert('Please enter a valid YouTube video URL or 11-character video ID.');return;}
+      const screen=document.getElementById('youtube-screen');
+      screen.innerHTML='<div id="yt-player" style="width:100%;height:100%"></div>';
+      if(ytPlayer && ytPlayer.loadVideoById){ytPlayer.loadVideoById(id);return;}
+      ytPlayer=new YT.Player('yt-player',{width:'100%',height:'100%',videoId:id,playerVars:{playsinline:1,rel:0}});
+    });
+    const tag=document.createElement('script');
+    tag.src='https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+
+    // Local audio playback + Web Audio API analyser. No file is uploaded.
+    const audio=document.getElementById('audio-player');
+    const fileInput=document.getElementById('audio-file');
+    const meter=document.getElementById('meter');
+    for(let i=0;i<36;i++){const bar=document.createElement('i');meter.appendChild(bar);}
+    let audioContext, analyser, source, frame;
+    fileInput.addEventListener('change',()=>{
+      const file=fileInput.files && fileInput.files[0];
+      if(!file)return;
+      if(audio.src.startsWith('blob:')) URL.revokeObjectURL(audio.src);
+      audio.src=URL.createObjectURL(file);
+      document.getElementById('audio-name').textContent=file.name;
+    });
+    async function startVisualizer(){
+      const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContextClass)return;
+      if(!audioContext){
+        audioContext=new AudioContextClass();
+        analyser=audioContext.createAnalyser();
+        analyser.fftSize=128;
+        source=audioContext.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+      }
+      if(audioContext.state==='suspended')await audioContext.resume();
+      const data=new Uint8Array(analyser.frequencyBinCount);
+      const bars=[...meter.children];
+      cancelAnimationFrame(frame);
+      const draw=()=>{
+        analyser.getByteFrequencyData(data);
+        bars.forEach((bar,index)=>{
+          const value=data[Math.floor(index*data.length/bars.length)]||0;
+          bar.style.height=Math.max(8, value/255*100)+'%';
+        });
+        frame=requestAnimationFrame(draw);
+      };
+      draw();
+    }
+    audio.addEventListener('play',()=>{startVisualizer().catch(()=>{});});
+    audio.addEventListener('pause',()=>cancelAnimationFrame(frame));
+    audio.addEventListener('ended',()=>cancelAnimationFrame(frame));
+  </script>
+</body>
+</html>
