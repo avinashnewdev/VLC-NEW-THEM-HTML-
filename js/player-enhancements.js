@@ -125,7 +125,7 @@
     new MutationObserver(sample).observe(img,{attributes:true,attributeFilter:['src']});
   }
   function install(){
-    document.querySelectorAll('#real-video-el,#net-video-el').forEach(v=>v.addEventListener('loadedmetadata',()=>{const src=v.currentSrc||v.src;if(cfg.autoSubtitle&&cfg.openSubtitlesApiKey&&src&&window.__vlcLastSubtitleSource!==src){window.__vlcLastSubtitleSource=src;searchOnlineSubtitles(true);}}));
+    document.querySelectorAll('#real-video-el,#net-video-el').forEach(v=>v.addEventListener('loadedmetadata',()=>{const src=v.currentSrc||v.src;if(cfg.autoSubtitle&&cfg.openSubtitlesApiKey&&src.startsWith('blob:')&&window.__vlcLastSubtitleSource!==src){window.__vlcLastSubtitleSource=src;searchOnlineSubtitles(true);}}));
     addStyles();addSettingsTab();addCustomizeControls();addSubtitleSearchButton();applyLook();installSpectrumColors();
     const observer=new MutationObserver(()=>{addSettingsTab();addCustomizeControls();addSubtitleSearchButton();applyLook();});
     observer.observe(document.body,{childList:true,subtree:true});
