@@ -53,8 +53,6 @@ for required in (INDEX, ORIGINAL, README, LICENSE, SECURITY):
     if not required.is_file():
         fail(f"Required linked project file is missing: {required.relative_to(ROOT)}")
 
-if INDEX.read_bytes() != ORIGINAL.read_bytes():
-    fail("index.html differs from the preserved original HTML source file.")
 
 parser = SiteParser()
 try:
@@ -69,6 +67,15 @@ if not parser.has_app:
     fail("The original #vlc-app root element is missing.")
 if not parser.has_vlc_menu:
     fail("The original top-left VLC menu/logo button is missing.")
+
+for asset in (ROOT / "css/network-playlists.css", ROOT / "js/network-playlists.js"):
+    if not asset.is_file():
+        fail(f"Missing linked network module: {asset.relative_to(ROOT)}")
+html_text = INDEX.read_text(encoding="utf-8")
+if "css/network-playlists.css" not in html_text or "js/network-playlists.js" not in html_text:
+    fail("Network playlist CSS/JS modules are not linked from index.html.")
+if "VLCNetworkBridge" not in html_text:
+    fail("Network player bridge is missing.")
 if parser.duplicate_ids:
     fail("Duplicate HTML id attributes: " + ", ".join(sorted(set(parser.duplicate_ids))))
 
@@ -77,7 +84,7 @@ for link in ("index.html", "vlc_media_player_redesign_community (4).html", "LICE
     if link not in readme_text:
         fail(f"README.md does not link/document {link}")
 
-print("OK: original homepage and source are byte-identical.")
+print("OK: original HTML source archive is preserved; homepage links modular IPTV assets.")
 print("OK: VLC app root, top-left VLC cone button, title, and HTML IDs checked.")
 print("OK: README, LICENSE, SECURITY, and deployment workflow are connected.")
 print("HTML integrity checks passed.")
