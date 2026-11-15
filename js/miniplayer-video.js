@@ -15,6 +15,9 @@
     }
     mini.muted = true;
     mini.playsInline = true;
+    mini.style.display = 'block';
+    const thumb = byId('mini-thumb-img');
+    if (thumb) thumb.style.display = 'none';
     if (mini.src !== source.currentSrc) {
       mini.src = source.currentSrc;
       mini.load();
