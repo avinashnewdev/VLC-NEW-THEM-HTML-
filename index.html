@@ -3843,10 +3843,15 @@
           syncPlayerUI();
           showToast('Unable to play video URL directly — check stream link');
         });
-        if (miniVid) {
+        if (miniVid && !isRemote) {
           miniVid.src = item.localUrl;
           try { miniVid.currentTime = state.currentTime; } catch (e) {}
           miniVid.play().catch(() => {});
+        } else if (miniVid && isRemote) {
+          // Do not open a second copy of a live network stream for the mini-player.
+          miniVid.pause();
+          miniVid.removeAttribute('src');
+          miniVid.load();
         }
       }
     }
@@ -3893,6 +3898,19 @@
 
     function attachEvents(el, isAudioEl) {
       if (!el) return;
+      el.addEventListener('error', () => {
+        if (el !== getActiveMediaElement()) return;
+        const code = el.error ? el.error.code : 0;
+        const reasons = {1:'Playback was aborted.',2:'Network connection interrupted.',3:'The browser could not decode this media format.',4:'This stream format or URL is not supported by this browser.'};
+        state.playing = false;
+        syncPlayerUI();
+        showToast(reasons[code] || 'Network stream failed. Check the URL, provider availability, and browser codec support.');
+      });
+      el.addEventListener('stalled', () => {
+        if (el === getActiveMediaElement() && state.activeMedia && isRemoteStreamItem(state.activeMedia)) {
+          showToast('Network buffering… waiting for the stream.');
+        }
+      });
       el.addEventListener('loadedmetadata', () => {
         if (el !== getActiveMediaElement()) return;
         const dur = (el.duration && isFinite(el.duration)) ? Math.floor(el.duration) : 0;
