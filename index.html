@@ -2696,8 +2696,8 @@
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div>
           <div style="color:var(--fg-1);font-weight:500;margin-bottom:2px;">Network or YouTube URL (Video / Audio / YouTube Link)</div>
-          <div style="color:var(--fg-a3);font-size:12px;margin-bottom:6px;">Paste any YouTube link (youtube.com/watch?v=..., youtu.be/..., shorts/...) or direct video/audio URL (.mp4, .webm, .mkv, .mp3, .flac, .wav, .ogg).</div>
-          <input type="text" id="stream-url-input" value="" placeholder="https://www.youtube.com/watch?v=... or https://example.com/video.mp4" style="width:100%;background:var(--bg-b1);border:1px solid var(--div-bright);border-radius:6px;padding:9px 12px;color:var(--fg-1);">
+          <div style="color:var(--fg-a3);font-size:12px;margin-bottom:6px;">Paste a YouTube video or public playlist URL (including music.youtube.com/playlist?list=...) or a direct video/audio URL (.mp4, .webm, .mp3, .flac, .wav, .ogg).</div>
+          <input type="text" id="stream-url-input" value="" placeholder="YouTube video / music playlist URL or direct media URL" style="width:100%;background:var(--bg-b1);border:1px solid var(--div-bright);border-radius:6px;padding:9px 12px;color:var(--fg-1);">
         </div>
         <div style="display:flex;gap:10px;align-items:flex-end;">
           <div style="flex:1;">
@@ -2708,7 +2708,7 @@
             <div style="color:var(--fg-1);font-weight:500;margin-bottom:2px;">Stream Type</div>
             <select id="stream-type-select" class="vlc-select" style="height:37px;min-width:145px;">
               <option value="auto">Auto-Detect (YouTube / Media)</option>
-              <option value="youtube">YouTube Video</option>
+              <option value="youtube">YouTube Video / Playlist</option>
               <option value="video">Direct Video Stream</option>
               <option value="audio">Audio / Music Stream</option>
             </select>
@@ -3699,9 +3699,22 @@
       miniThumb.src = art;
       document.getElementById('scrub-preview-img').src = art;
       if (!m.isAudio && m.localUrl && miniVid) {
-        if (miniVid.src !== m.localUrl) miniVid.src = m.localUrl;
-        miniVid.style.display = 'block';
-        miniThumb.style.display = 'none';
+        const isRemoteMini = !m.localUrl.startsWith('blob:') && !m.localUrl.startsWith('data:');
+        const miniOpen = document.getElementById('miniplayer').classList.contains('open');
+        if (!isRemoteMini || miniOpen) {
+          if (miniVid.src !== m.localUrl) miniVid.src = m.localUrl;
+          miniVid.muted = true;
+          miniVid.playsInline = true;
+          miniVid.style.display = 'block';
+          miniThumb.style.display = 'none';
+          if (miniOpen && state.playing && miniVid.paused) miniVid.play().catch(() => {});
+        } else {
+          miniVid.pause();
+          miniVid.removeAttribute('src');
+          miniVid.load();
+          miniVid.style.display = 'none';
+          miniThumb.style.display = 'block';
+        }
       } else if (miniVid) {
         miniVid.pause();
         miniVid.style.display = 'none';
@@ -7064,7 +7077,7 @@
         const hasCustom = Boolean(customTitle);
         const title = (customTitle && urls.length === 1) ? customTitle : (customTitle ? `${customTitle} #${idx + 1}` : (cleanUrlName || 'Network Stream'));
         const coverArt = MUSIC_THEME_COVERS[(SONGS.length + idx) % MUSIC_THEME_COVERS.length] || DEFAULT_AUDIO_COVER;
-        const ytThumb = isYt ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : null;
+        const ytThumb = isYt && ytId ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : null;
 
         const streamItem = {
           id: 'stream_' + Date.now() + '_' + idx,
